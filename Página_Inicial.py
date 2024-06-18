@@ -93,16 +93,9 @@ def pagina_inicial():
 
         selected_df = df.drop(columns=globals.current_hidden_columns)
 
-        textoSOM = '''Um Mapa SOM, ou Mapa Auto-Organizável, é uma técnica de aprendizado não supervisionado usada para visualizar e organizar dados complexos 
-        em uma representação bidimensional.        
+        textoSOM = '''Um Mapa SOM, ou Mapa Auto-Organizável, é uma técnica de aprendizado não supervisionado usada para visualizar e organizar dados complexos em uma representação bidimensional.
                 '''
         st.markdown(textoSOM)
-
-        st.markdown('''
-        Atente-se as diferentes cores dentro do mapa. As cores identificam seus respectivos grupos, e cores diferentes indicam grupos diferentes. As notas
-        de cada célula, são baseadas na variável de saída de cada município, variável essa definida anteriormente na Escolha de Colunas. Os tamanhos das células variam de acordo
-        com o valor dessas notas, podendo aumentar ou diminuir.
-                    ''')
 
         st.divider()
 
@@ -111,7 +104,8 @@ def pagina_inicial():
                 x=alt.X('x', scale=alt.Scale(domain=(0,30))),
                 y=alt.Y('y', scale=alt.Scale(domain=(0,30))),
                 size=alt.Size('Nota', scale=alt.Scale(domain=(0,1))),
-                color=alt.Color("Cor:N", scale=None)
+                color=alt.Color("Cor:N", scale=None),
+                opacity=alt.value(1)
             ).interactive().configure_view(fill='black').properties(width=400, height=400, title="Mapa SOM (Aguardando dados...)")
             globals.som = st.altair_chart(globals.som_chart, use_container_width=True)
         else:
@@ -162,6 +156,7 @@ def pagina_inicial():
                         y="y",
                         size="Nota",
                         color=alt.Color("Cor:N", scale=None),
+                        opacity=alt.value(1),
                         tooltip=["Grupo", "Nota", "Municípios"]
                     ).interactive().configure_view(fill='black').properties(width=400, height=400, title=chart_title)
                 else:
@@ -170,6 +165,7 @@ def pagina_inicial():
                         y="y",
                         size="Nota",
                         color=alt.Color("Cor:N", scale=None),
+                        opacity=alt.value(1),
                         tooltip=["Grupo", "Nota", "Municípios"]
                     ).interactive().configure_view(fill='black').properties(width=400, height=400, title=chart_title)
 
