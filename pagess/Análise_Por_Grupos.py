@@ -512,7 +512,8 @@ def pagina_analise_por_grupos():
         ##############################################################################
         # FUNÇÕES AUXILIARES PARA AS SEÇÕES 2 E 5
         def formatDf(df):
-            formated_df = df.drop(columns=['Município'])
+            #formated_df = df.drop(columns=['Município'])
+            formated_df = df.drop(columns=[globals.current_label_columns[0]])
             nums_columns = list(range(1, len(formated_df.columns) + 1))
             formated_df.columns = nums_columns
 
@@ -559,7 +560,8 @@ def pagina_analise_por_grupos():
             image_filenames = []
             numeric_cols = list(globals.crunched_df.select_dtypes(include=['float64', 'int64']).columns)
             max_rows = math.ceil(len(globals.crunched_df)/ 3)
-            candidate_rows = np.array(list(globals.crunched_df[list(globals.crunched_df.columns)[-1]].values))
+            #candidate_rows = np.array(list(globals.crunched_df[list(globals.crunched_df.columns)[-1]].values))
+            candidate_rows = np.array(list(globals.crunched_df[list(globals.crunched_df[globals.current_output_columns[0]].values))
             indexes = np.where((candidate_rows >= filtro_min/100) & (candidate_rows <= filtro_max/100))[0].tolist()
 
             partitions = [indexes[i:i+max_rows] for i in range(0, len(indexes), max_rows)]
@@ -1357,7 +1359,8 @@ def pagina_analise_por_grupos():
                 val_max = st.number_input("Valor máximo", value= 70, placeholder="Digite um número", min_value = 0, max_value=100)
 
             def filtrar_df(df, minimo, maximo):
-                    df_filtrado = df[(df.iloc[:, -1] >= (minimo/100)) & (df.iloc[:, -1] <= (maximo/100))]
+                    #df_filtrado = df[(df.iloc[:, -1] >= (minimo/100)) & (df.iloc[:, -1] <= (maximo/100))]
+                    df_filtrado = df[(df[globals.current_output_columns[0]] >= (minimo / 100)) & (df[globals.current_output_columns[0]] <= (maximo / 100))]
                     return df_filtrado
 
             text_secao5 = [
