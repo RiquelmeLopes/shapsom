@@ -265,14 +265,14 @@ def pagina_analise_estatistica_exploratoria():
             opcoes = df.columns[3:].tolist()
             variavel = st.selectbox('Selecione a variável', opcoes, index= len(opcoes)-1)
             nome_variavel_padrao = df.columns[-1]
+            nome_df = globals.current_label_columns
             st.markdown(f'Caso queira trocar a variável padrão, que é "{nome_variavel_padrao}", sua variável de saída padrão, selecione uma nova variável e gere o gráfico de dispersão novamente.')
             # Create a scatterplot of the penultimate column
             fig = px.scatter(
                 dfm.reset_index(),
                 y=variavel,
                 x=dfmc.columns[0],
-                # size=dfmc.columns[-1],
-                hover_name="Município",
+                # size=dfmc.columns[-1],                
                 color=variavel,
                 color_continuous_scale='icefire_r',
             )

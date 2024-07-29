@@ -10,6 +10,7 @@ import altair as alt
 from my_utils import create_map, HEX_SHAPE, verificarColunaDesc, convert_numeric
 import numpy as np
 import statistics
+import re
 
 from pagess.Análise_Estatística_Exploratória import pagina_analise_estatistica_exploratoria
 from pagess.Análise_Por_Grupos import pagina_analise_por_grupos
@@ -32,23 +33,31 @@ def pagina_inicial():
     with st.expander("**Gostaria de baixar o modelo padrão de planilha?**", expanded=False):
         st.download_button('Modelo', 'modelo', file_name=download_file, help='Modelo de planilha a ser enviada')
 
-    file = st.file_uploader("**Faça upload da sua planilha**", type=['csv'], help='Caso sua planilha já esteja no mesmo formato do modelo (ou seja, com as colunas semelhantes), faça o upload dela. Caso contrário, faça o download da planilha modelo e preencha com seus dados.')
-    
+    file = st.file_uploader("*Faça upload da sua planilha*", type=['csv', 'xlsx'], help='Caso sua planilha já esteja no mesmo formato do modelo (ou seja, com as colunas semelhantes), faça o upload dela. Caso contrário, faça o download da planilha modelo e preencha com seus dados.')
     if file:
-        df = pd.read_csv(file, sep=',') if tipo == 'CSV' else pd.read_excel(file)
+        df = pd.read_csv(file, sep=',', encoding='latin1') if file.name.endswith(".csv") else pd.read_excel(file)
+        df.columns = [str(c) for c in df.columns]
+
+        for c in df.columns:
+            vals = df[c].values
+            if all([str(s).isdigit() for s in vals]):
+                df[c] = [int(str(v)) for v in vals]
+            elif all([re.match(r'^\d+[.,]\d+$', str(s)) or str(s).isdigit() for s in vals]):
+                df[c] = [float(str(v).replace(",", ".")) for v in vals]
+            else:
+                df[c] = [str(v) for v in vals]
+
         globals.original_database = df.copy()
-
-        if(verificarColunaDesc(globals.original_database)):
-            globals.current_database = globals.original_database.drop(globals.original_database.index[0]).applymap(convert_numeric)
-            globals.current_database.index = globals.current_database.index-1
-        else:
-            globals.current_database = globals.original_database
-
-        globals.current_database = globals.current_database.dropna()
+        globals.current_database = globals.original_database.dropna()
         globals.current_database_name =  file.name.split(".")[0]
 
         numeric_cols = list(globals.current_database.select_dtypes(include=['float64', 'int64']).columns)
         textual_cols = list(globals.current_database.select_dtypes(include=['object']).columns)
+        
+        if not textual_cols:
+            textual_cols = [numeric_cols[0]]
+            df[numeric_cols[0]] = [str(x) for x in df[numeric_cols[0]].values]
+            numeric_cols = numeric_cols[1:]
         st.divider()
 
         st.markdown("Caso deseje modificar a escolha de colunas padrões, clique na opção abaixo:")
