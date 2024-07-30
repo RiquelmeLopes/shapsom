@@ -28,7 +28,7 @@ def pagina_inicial():
     tipo = st.radio('**Escolha um tipo de arquivo. Os tipos de arquivo suportados para upload são CSV e Excel.**',['CSV','Excel'], help='CSV (Comma-Separated Values): Este é um formato de arquivo simples que usa uma vírgula para separar os valores. Excel: Este é um formato de planilha criado pela Microsoft. Os arquivos Excel podem conter dados em várias planilhas, além de permitir a inclusão de gráficos, fórmulas e outras funcionalidades avançadas. ')
     st.markdown('Atente-se a como sua planilha está organizada! Tente deixá-la no formato do modelo padrão.')
 
-    download_file = 'modelo.csv' if tipo == 'csv' else 'modelo.xslx'
+    download_file = 'modelo_csv.csv' if tipo == 'csv' else 'modelo_xlsx.xslx'
 
     with st.expander("**Gostaria de baixar o modelo padrão de planilha?**", expanded=False):
         st.download_button('Modelo', 'modelo', file_name=download_file, help='Modelo de planilha a ser enviada')

@@ -1,0 +1,2 @@
+Nome,Entrada 1,Entrada 2,Entrada n,Saída
+"Esse será o nome de ""Rótulo"" que a aplicação usará. Idealmente, deve ser nomeada como ""Municípios"" contendo seus nomes.",Entrada de dados que será usada para os cálculos finais,Entrada de dados que será usada para os cálculos finais,Entrada de dados que será usada para os cálculos finais,"Essa será a coluna final, onde contém a variável dependente ou o valor que se deseja prever ou analisar. Esta coluna representa o resultado que é influenciado pelos dados das colunas de entrada"
