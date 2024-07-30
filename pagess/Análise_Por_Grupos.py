@@ -561,7 +561,9 @@ def pagina_analise_por_grupos():
             numeric_cols = list(globals.crunched_df.select_dtypes(include=['float64', 'int64']).columns)
             max_rows = math.ceil(len(globals.crunched_df)/ 3)
             #candidate_rows = np.array(list(globals.crunched_df[list(globals.crunched_df.columns)[-1]].values))
-            candidate_rows = np.array(list(globals.crunched_df[list(globals.crunched_df[globals.current_output_columns[0]].values))
+            # candidate_rows = np.array(list(globals.crunched_df[list(globals.crunched_df[globals.current_output_columns[0]].values))
+            candidate_rows = np.array(list(globals.crunched_df[list(globals.crunched_df[globals.current_output_columns[0]].values)]))
+
             indexes = np.where((candidate_rows >= filtro_min/100) & (candidate_rows <= filtro_max/100))[0].tolist()
 
             partitions = [indexes[i:i+max_rows] for i in range(0, len(indexes), max_rows)]

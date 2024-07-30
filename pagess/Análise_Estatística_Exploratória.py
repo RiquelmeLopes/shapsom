@@ -29,6 +29,10 @@ import geopandas as gpd
 
 import os
 
+# filename = f'mapa.html'
+# if os.path.exists(filename):
+#     os.remove(filename)
+
 def juntar_pdfs(pdfs):
   merger = PdfMerger()
   for pdf in pdfs:
@@ -177,15 +181,15 @@ def pagina_analise_estatistica_exploratoria():
             def generate_map():
                 # Convert the DataFrame to a GeoDataFrame
                 gdf = gpd.read_file('PE_Municipios_2022.zip')
-                gdf = gdf.merge(df[[df.columns[0],df.columns[-1]]], left_on='NM_MUN', right_on=df.columns[0])
+                gdf = gdf.merge(df[[df[globals.current_label_columns],df[globals.current_output_columns]]], left_on='NM_MUN', right_on=df[globals.current_label_columns])
 
                 fig, ax = plt.subplots(1, 1)
 
-                df[df.columns[-1]] = df[df.columns[-1]].round(2)
+                df[df[globals.current_output_columns]] = df[df[globals.current_output_columns]].round(2)
 
                 bounds = gdf.total_bounds  # Get the bounds of the data
                 center = [(bounds[1] + bounds[3]) / 2, (bounds[0] + bounds[2]) / 2]
-                m = gdf.explore(df.columns[-1], cmap='RdBu', fit_bounds=True, map_kwds={'location': center, 'zoom_start':4})
+                m = gdf.explore(column=df[globals.current_output_columns], vmin=0, vmax=1, fitbounds="locations", map_kwrds={'scrollWheelZoom': 4})
 
                 components.html(m._repr_html_(), height=400)
 
@@ -219,8 +223,8 @@ def pagina_analise_estatistica_exploratoria():
 
         st.subheader('Análise Estatística')
 
-        dfmc = df.groupby(df.columns[0])[df.columns[-1]].apply(lambda x: x.mode().iloc[0]).reset_index()
-        dfm = df.groupby(df.columns[0])[df.columns[3:]].apply(lambda x: x.mode().iloc[0]).reset_index()
+        dfmc = df.groupby(globals.current_label_columns)[globals.current_output_columns].apply(lambda x: x.mode().iloc[0]).reset_index()
+        dfm = df.groupby(globals.current_label_columns)[df.columns[3:]].apply(lambda x: x.mode().iloc[0]).reset_index()
         dfmc[dfmc.columns[-1]] = dfmc[dfmc.columns[-1]].round(2)
 
         st.markdown('''A tabela de estatísticas fornece um resumo estatístico descritivo da variável alvo para os municípios analisados. Os valores apresentados 
@@ -264,7 +268,7 @@ def pagina_analise_estatistica_exploratoria():
         with st.expander('Visualizar Gráfico de Dispersão'):
             opcoes = df.columns[3:].tolist()
             variavel = st.selectbox('Selecione a variável', opcoes, index= len(opcoes)-1)
-            nome_variavel_padrao = df.columns[-1]
+            nome_variavel_padrao = globals.current_output_columns
             nome_df = globals.current_label_columns
             st.markdown(f'Caso queira trocar a variável padrão, que é "{nome_variavel_padrao}", sua variável de saída padrão, selecione uma nova variável e gere o gráfico de dispersão novamente.')
             # Create a scatterplot of the penultimate column
