@@ -11,7 +11,7 @@ from my_utils import create_map, HEX_SHAPE, verificarColunaDesc, convert_numeric
 import numpy as np
 import statistics
 import re
-
+from io import BytesIO, StringIO
 from pagess.Análise_Estatística_Exploratória import pagina_analise_estatistica_exploratoria
 from pagess.Análise_Por_Grupos import pagina_analise_por_grupos
 from pagess.Anomalias import pagina_anomalias
@@ -21,6 +21,22 @@ from pagess.Relatório_dos_Municípios import relatorio_municipios
 imagem = Image.open('pixelcut-export.png')
 st.image(imagem, use_column_width=True)
 
+colunas_modelo = ['Nome', 'Entrada 1', 'Entrada 2', 'Entrada n', 'Saída']
+dados_modelo = [['Esse será o nome de "Rótulo" que a aplicação usará. Idealmente, deve ser nomeada como "Municípios" contendo seus nomes.', 'Entrada de dados que será usada para os cálculos finais', 'Entrada de dados que será usada para os cálculos finais', 'Entrada de dados que será usada para os cálculos finais', 'Essa será a coluna final, onde contém a variável dependente ou o valor que se deseja prever ou analisar. Esta coluna representa o resultado que é influenciado pelos dados das colunas de entrada']]
+
+# Criar o DataFrame
+df_modelo = pd.DataFrame(dados_modelo, columns=colunas_modelo)
+
+csv_buffer = BytesIO()
+df_modelo.to_csv(csv_buffer, index=False)
+csv_buffer.seek(0)
+
+# Salvar em buffer XLSX
+xlsx_buffer = BytesIO()
+with pd.ExcelWriter(xlsx_buffer, engine='xlsxwriter') as writer:
+    df_modelo.to_excel(writer, index=False)
+xlsx_buffer.seek(0)
+
 def pagina_inicial():
     
     st.title("**Sistema de Apoio a Auditorias do Tribunal de Contas do Estado 📊**")
@@ -28,10 +44,9 @@ def pagina_inicial():
     tipo = st.radio('**Escolha um tipo de arquivo. Os tipos de arquivo suportados para upload são CSV e Excel.**',['CSV','Excel'], help='CSV (Comma-Separated Values): Este é um formato de arquivo simples que usa uma vírgula para separar os valores. Excel: Este é um formato de planilha criado pela Microsoft. Os arquivos Excel podem conter dados em várias planilhas, além de permitir a inclusão de gráficos, fórmulas e outras funcionalidades avançadas. ')
     st.markdown('Atente-se a como sua planilha está organizada! Tente deixá-la no formato do modelo padrão.')
 
-    download_file = 'modelo_csv.csv' if tipo == 'csv' else 'modelo_xlsx.xslx'
-
     with st.expander("**Gostaria de baixar o modelo padrão de planilha?**", expanded=False):
-        st.download_button('Modelo', 'modelo', file_name=download_file, help='Modelo de planilha a ser enviada')
+        st.download_button('Modelo CSV', data=csv_buffer.getvalue(), file_name='modelo_csv.csv', mime="text/csv",  help='Modelo de planilha a ser enviada')
+        st.download_button('Modelo XLSX', data=xlsx_buffer.getvalue(),file_name='modelo_xlsx.xlsx', mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', help='Modelo de planilha a ser enviada')
 
     file = st.file_uploader("*Faça upload da sua planilha*", type=['csv', 'xlsx'], help='Caso sua planilha já esteja no mesmo formato do modelo (ou seja, com as colunas semelhantes), faça o upload dela. Caso contrário, faça o download da planilha modelo e preencha com seus dados.')
     if file:
