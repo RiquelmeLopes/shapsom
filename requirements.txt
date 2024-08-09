@@ -90,5 +90,6 @@ weasyprint==61.2
 webencodings==0.5.1
 xgboost==2.0.3
 xyzservices==2024.4.0
+xlsxwriter==3.2.0
 zopfli==0.2.3
 sortedcontainers==2.4.0
